@@ -9,13 +9,6 @@ LEVELS = '- .oOX'
 CLASSES = ['rejected', 'done0', 'done1', 'done2', 'done3', 'done4']
 
 
-def makeExtension(configs=None):
-    if configs is None:
-        return VimwikiExtension()
-    else:
-        return VimwikiExtension(configs=configs)
-
-
 class VimwikiExtension(Extension):
 
     def __init__(self, **kwargs):
@@ -50,7 +43,7 @@ class VimwikiTodoPostprocessor(Postprocessor):
         self.levels = levels
         self.classes = classes
         self.item_pattern = re.compile(
-            r'^<li>\[([' + self.levels + r'])\](.*)</li>$', re.MULTILINE)
+            r'^<li>\[([' + self.levels + r'])\](.*)$', re.MULTILINE)
         super(VimwikiTodoPostprocessor, self).__init__(*args, **kwargs)
 
     def run(self, html):
@@ -58,8 +51,9 @@ class VimwikiTodoPostprocessor(Postprocessor):
 
     def _convert_item(self, match):
         level, caption = match.groups()
-        return '<li class="{}">{}</li>'.format(
+        return '<li class="{}">{}'.format(
             self.classes[self.levels.index(level)], caption)
+
 
 class VimwikiTagsPostprocessor(Postprocessor):
     """
@@ -84,3 +78,5 @@ class VimwikiTagsPostprocessor(Postprocessor):
                 for t in tags]))
 
 
+def makeExtension(**kwargs):
+    return VimwikiExtension(**kwargs)
